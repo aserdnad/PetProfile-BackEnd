@@ -9,6 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User
+from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
 app = Flask(__name__)
@@ -38,6 +39,30 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route("/sign-up", methods=["POST"])
+def sign_up():
+    data = request.json
+    user = User.create(email=data.get('email'), password=data.get('password'))
+    if not isinstance(user, User):
+        return jsonify({"msg": "ERROR of Matrix X_X"}), 500
+    return jsonify(user.serialize()), 201
+
+@app.route("/log-in", methods=["POST"])
+def log_in():
+    print(request.data)
+    print(request.json)
+    data = request.json
+    user = User.query.filter_by(email=data['email']).one_or_none()
+    if user is None: 
+        return jsonify({"msg": "no existe el usuario"}), 404
+    if not user.check_password(data.get('password')):
+        return jsonify({"msg": "bad credentials"}), 400
+    token = create_access_token(identity=user.id)
+    return jsonify({
+        "user": user.serialize(),
+        "token": token
+    }), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
