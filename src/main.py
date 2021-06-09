@@ -43,26 +43,37 @@ def handle_hello():
 @app.route("/sign-up", methods=["POST"])
 def sign_up():
     data = request.json
-    user = User.create(email=data.get('email'), password=data.get('password'))
+    user = User.create(email=data.get('email'), 
+    password=data.get('password'),
+    user_name=data.get('user_name'),
+    name=data.get('name'),
+    last_name=data.get('last_name'),
+    phone=data.get('phone'),
+    birthday=data.get('birthday'),
+    country=data.get('country'),
+    city=data.get('city'))
     if not isinstance(user, User):
         return jsonify({"msg": "ERROR of Matrix X_X"}), 500
     return jsonify(user.serialize()), 201
 
+    #SIGN-UP ya funcional
+
 @app.route("/log-in", methods=["POST"])
 def log_in():
-    print(request.data)
-    print(request.json)
+    
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
     if user is None: 
-        return jsonify({"msg": "no existe el usuario"}), 404
+        return jsonify({"msg": "Vuelva insertar usuario, Gracias :D"}), 404
     if not user.check_password(data.get('password')):
-        return jsonify({"msg": "bad credentials"}), 400
+        return jsonify({"msg": "Password incorrecto X_x"}), 400
     token = create_access_token(identity=user.id)
     return jsonify({
         "user": user.serialize(),
         "token": token
     }), 200
+
+    
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
