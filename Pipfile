@@ -4,10 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-<<<<<<< HEAD
 pylint = "*"
-=======
->>>>>>> 506eacae32747e8350e509e80d2ac440f958f5a6
 
 [packages]
 flask = "*"
@@ -22,10 +19,7 @@ flask-cors = "*"
 gunicorn = "*"
 mysqlclient = "*"
 flask-admin = "*"
-<<<<<<< HEAD
 flask-jwt-extended = "*"
-=======
->>>>>>> 506eacae32747e8350e509e80d2ac440f958f5a6
 
 [requires]
 python_version = "3.8"
