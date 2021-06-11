@@ -72,3 +72,98 @@ class User(db.Model):
             "city": self.city
             # do not serialize the password, its a security breach
         }
+class History(db.Model):
+  id = db.Column(db.Integer,primary_key=True)
+  history = db.Column(db.String(40),unique=True,nullable=False)
+  vacune = db.Column(db.String(40),unique=True,nullable=False)
+  user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+
+  user = db.relationship('User',lazy=True)
+
+  def __init__(self,**kwargs):
+    self.history = kwargs.get('history')
+    self.vacune = kwargs.get('vacune')
+    self.user_id = kwargs.get('user_id')
+  
+  def __repr__(self):
+    return '<History %r>' % self.history
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "history": self.history,
+      "vacune": self.vacune,
+      "user_id": self.user_id
+      }
+
+
+class Photo_add(db.Model):
+  id = db.Column(db.Integer,primary_key=True)
+  images = db.Column(db.String(40),unique=True,nullable=False)
+  user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+
+  user = db.relationship('User',lazy=True)
+
+  def __init__(self,**kwargs):
+    self.images = kwargs.get('images')
+    self.user_id = kwargs.get('user_id')
+
+  def __repr__(self):
+    return '<Photo_add %r>' % self.images
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "images": self.images,
+      "user_id": self.user_id
+    }
+
+
+class Pet(db.Model):
+  id = db.Column(db.Integer,primary_key=True)
+  name = db.Column(db.String(40),unique=True,nullable=False)
+  race = db.Column(db.String(40),unique=True,nullable=False)
+  gender = db.Column(db.String(40),unique=True,nullable=False)
+  age = db.Column(db.Integer(),unique=True,nullable=False)
+  species = db.Column(db.String(40),unique=True,nullable=False)
+  weight = db.Column(db.Integer(),unique=True,nullable=False)
+  height = db.Column(db.Integer(),unique=True,nullable=False)
+  birthday = db.Column(db.Integer(),unique=True,nullable=False)
+  photo_add_id = db.Column(db.Integer(), db.ForeignKey(Photo_add.id))
+  history_id = db.Column(db.Integer(), db.ForeignKey(History.id))
+  user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+
+  user = db.relationship('User',lazy=True)
+  photo = db.relationship('Photo_add',lazy=True)
+  history = db.relationship('History',lazy=True)
+
+  def __init__(self,**kwargs):
+    self.name = kwargs.get('name')
+    self.race = kwargs.get('race')
+    self.gender = kwargs.get('gender')
+    self.age = kwargs.get('age')
+    self.species = kwargs.get('species')
+    self.weight = kwargs.get('weight')
+    self.height = kwargs.get('height')
+    self.birthday = kwargs.get('birthday')
+    self.photo_add_id = kwargs.get('photo_add_id')
+    self.history_id = kwargs.get('history_id')
+    self.user_id = kwargs.get('user_id')
+
+  def __repr__(self):
+    return '<Pet %r>' % self.name
+
+  def serialize(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "race": self.race,
+      "age": self.age,
+      "species": self.species,
+      "weight": self.weight,
+      "height": self.height,
+      "birthday": self.birthday,
+      "photo_add_id": self.photo_add_id,
+      "history_id": self.history_id,
+      "user_id": self.user_id
+      }
