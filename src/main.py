@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, History
 from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
@@ -77,8 +77,16 @@ def log_in():
 @app.route("/history", methods=["POST"])
 def history():
     data = request.json
-    user = User.query.filter_by(email=data['email'], user_name=['uaer_name'])
-    history = History.create()
+    user = User.query.filter_by(email=data['email']).one_or_none()
+    history = History.create(history=data.get('history'), vacune=data.get('vacune'), user_id=user.id)
+    if user is None:
+        return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+    if not isinstance(user, User):
+        return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
+    if not isinstance(history, History):
+        return jsonify({"msg": "ERROR of Matrix X_X History"}), 500
+    return jsonify(history.serialize()), 201
+    
 
     
 
