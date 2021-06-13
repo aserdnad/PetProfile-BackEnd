@@ -74,6 +74,12 @@ def log_in():
         "token": token
     }), 200
 
+@app.route("/history", methods=["POST"])
+def history():
+    data = request.json
+    user = User.query.filter_by(email=data['email'], user_name=['uaer_name'])
+    history = History.create()
+
     
 
 # this only runs if `$ python src/main.py` is executed
