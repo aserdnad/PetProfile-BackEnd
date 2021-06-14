@@ -97,7 +97,7 @@ def photo_add():
     if not isinstance(user, User):
         return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
     if not isinstance(photo_add, Photo_add):
-        return jsonify({"msg": "ERROR of Matrix X_X History"}), 500
+        return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
     return jsonify(photo_add.serialize()), 201
 
     
