@@ -184,3 +184,33 @@ class Guess(db.Model):
 #       "post_id": self.post_id,
 #       "guess_id": self.guess_id
 #     }
+
+
+
+
+
+@app.route("/post", methods=["POST"])
+def post():
+    data = request.json
+    user = User.query.filter_by(email=data['email']).one_or_none()
+    photo_add = Photo_add.query.filter_by(user_id=user.id).one_or_none()
+    pet =Pet.query.filter_by(user_id=user.id).one_or_none()
+    post = Post.create(
+        footer_description = data.get('footer_description'),
+        place = data.get('place'),
+        date = data.get('date'),
+        photo_add_id = photo_add.id,
+        pet_id = pet.id,
+        # interaction_id = interaction_id,
+        user_id = user.id
+        )
+    if user is None:
+      return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+    if not isinstance(user, User):
+      return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
+    if not isinstance(photo_add, Photo_add):
+      return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
+    if not isinstance(pet, Pet):
+      return jsonify({"msg": "ERROR of Matrix X_X Pest"}), 500
+    return jsonify(post.serialize()), 201
+
