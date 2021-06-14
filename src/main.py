@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, History, Photo_add
+from models import db, User, History, Photo_add, Pet
 from flask_jwt_extended import create_access_token, JWTManager
 #from models import Person
 
@@ -88,7 +88,7 @@ def history():
     return jsonify(history.serialize()), 201
     
 @app.route("/photo_add", methods=["POST"])
-def photo_add():
+def photo_add_user():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
     photo_add = Photo_add.create(images=data.get('images'), user_id=user.id)
@@ -99,6 +99,33 @@ def photo_add():
     if not isinstance(photo_add, Photo_add):
         return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
     return jsonify(photo_add.serialize()), 201
+
+@app.route("/pet", methods=["POST"])
+def pet():
+    data = request.json
+    user = User.query.filter_by(email=data['email']).one_or_none()
+    photo_add = Photo_add.query.filter_by(user_id=user.id).one_or_none()
+    history = History.query.filter_by(user_id=user.id).one_or_none()
+    pet = Pet.create(name = data.get('name'),
+        race = data.get('race'),
+        gender = data.get('gender'),
+        age = data.get('age'),
+        species = data.get('species'),
+        weight = data.get('weight'),
+        height = data.get('height'),
+        birthday = data.get('birthday'),
+        photo_add_id = photo_add.id,
+        history_id = history.id,
+        user_id = user.id)
+    if user is None:
+        return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+    if not isinstance(user, User):
+        return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
+    if not isinstance(photo_add, Photo_add):
+        return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
+    if not isinstance(history, History):
+        return jsonify({"msg": "ERROR of Matrix X_X History"}), 500
+    return jsonify(pet.serialize()), 201
 
     
 

@@ -194,12 +194,13 @@ class Pet(db.Model):
         "id": self.id,
         "name": self.name,
         "race": self.race,
+        "gender": self.gender,
         "age": self.age,
         "species": self.species,
         "weight": self.weight,
         "height": self.height,
         "birthday": self.birthday,
-        "photo_add_id": self.photo_add_id,
-        "history_id": self.history_id,
+        "photo_add_id": list(map(lambda relation: relation.photo_add.images, self.photo_add_id)),
+        "history_id": list(map(lambda relation: relation.history.serialize(), self.history_id)),
         "user_id": self.user_id
         }
