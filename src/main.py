@@ -193,6 +193,31 @@ def user_by_id(id_user):
 
         return jsonify(user.serialize())
 
+@app.route("/pet/<int:id_pet>", methods=["GET", "PUT"])
+def pet_by_id(id_pet):
+
+    pet = Pet.query.get(id_pet)
+    data = request.json
+    if request.method == "GET":
+
+        return jsonify(pet.serialize())
+
+    elif request.method == "PUT":
+        try: 
+            if 'age' in data:
+                pet.age = data['age']
+            if 'weight' in data:
+                pet.weight = data['weight']
+            if 'height' in data: 
+                pet.height = data['height']
+           
+        except:
+            raise APIException('Some data failed', status_code=400)
+
+        pet.save()
+
+        return jsonify(pet.serialize())
+
 
 
 

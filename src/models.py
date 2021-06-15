@@ -123,9 +123,13 @@ class Pet(db.Model):
         return pet
 
     def save(self):
-        """Save and commit a new contact"""
+        
         db.session.add(self)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return False
 
     def __repr__(self):
         return '<Pet %r>' % self.name
