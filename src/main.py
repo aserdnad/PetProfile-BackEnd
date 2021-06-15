@@ -1,6 +1,9 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+"""
+This module takes care of starting the API Server, Loading the DB and Adding the endpoints
+"""
 import os
 from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
@@ -78,7 +81,8 @@ def log_in():
 def history():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
-    history = History.create(history=data.get('history'), vacune=data.get('vacune'), user_id=user.id)
+    pet = Pet.query.filter_by(name=data['name']).one_or_none()
+    history = History.create(history=data.get('history'), vacune=data.get('vacune'), user_id=user.id, pet_id=pet.id)
     if user is None:
         return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
     if not isinstance(user, User):
@@ -91,7 +95,8 @@ def history():
 def photo_add_user():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
-    photo_add = Photo_add.create(images=data.get('images'), user_id=user.id)
+    pet = Pet.query.filter_by(name=data['name']).one_or_none()
+    photo_add = Photo_add.create(images=data.get('images'), user_id=user.id, pet_id=pet.id)
     if user is None:
         return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
     if not isinstance(user, User):
@@ -104,8 +109,6 @@ def photo_add_user():
 def pet():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
-    photo_add = Photo_add.query.filter_by(user_id=user.id).one_or_none()
-    history = History.query.filter_by(user_id=user.id).one_or_none()
     pet = Pet.create(name = data.get('name'),
         race = data.get('race'),
         gender = data.get('gender'),
@@ -114,18 +117,45 @@ def pet():
         weight = data.get('weight'),
         height = data.get('height'),
         birthday = data.get('birthday'),
-        photo_add_id = photo_add.id,
-        history_id = history.id,
         user_id = user.id)
     if user is None:
         return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
     if not isinstance(user, User):
         return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
-    if not isinstance(photo_add, Photo_add):
-        return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
-    if not isinstance(history, History):
-        return jsonify({"msg": "ERROR of Matrix X_X History"}), 500
     return jsonify(pet.serialize()), 201
+
+
+@app.route("/history/pet/<name>", methods=["GET"])
+def history_get(name):
+
+    pet = Pet.query.filter_by(name=name).one_or_none()
+    history = History.query.filter(History.pet_id==pet.id)
+    history_list = history.all()
+
+    history_get_id = list(map(lambda x: x.id, history_list))
+
+    history_get_list = list(map(lambda n: History.query.get(n), history_get_id))
+
+    return jsonify(list(map(lambda x: x.serialize(), history_get_list))), 201
+
+@app.route("/image/pet/<name>", methods=["GET"])
+def image_get(name):
+
+    pet = Pet.query.filter_by(name=name).one_or_none()
+    images = Photo_add.query.filter(Photo_add.pet_id==pet.id)
+    images_list = images.all()
+
+    images_get_id = list(map(lambda x: x.id, images_list))
+
+    images_get_list = list(map(lambda n: Photo_add.query.get(n), images_get_id))
+
+    return jsonify(list(map(lambda x: x.serialize(), images_get_list))), 201
+
+
+
+    return jsonify(list(map(lambda x: x.serialize(), images_get_list))), 201
+
+    
 
     
 
