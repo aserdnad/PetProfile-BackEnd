@@ -166,14 +166,37 @@ def pet_get(user_name):
 
     return jsonify(list(map(lambda x: x.serialize(), pet_get_list))), 201
 
-@app.route("/user/<int:id_user>", methods=["GET"])
+@app.route("/user/<int:id_user>", methods=["GET", "PUT"])
 def user_by_id(id_user):
 
     user = User.query.get(id_user)
-
+    data = request.json
     if request.method == "GET":
 
         return jsonify(user.serialize())
+
+    elif request.method == "PUT":
+        try: 
+            if 'country' in data:
+                user.country = data['country']
+            if 'email' in data:
+                user.email = data['email']
+            if 'city' in data: 
+                user.city = data['city']
+            if 'phone' in data:
+                user.phone = data['phone']
+           
+        except:
+            raise APIException('Some data failed', status_code=400)
+
+        user.save()
+
+        return jsonify(user.serialize())
+
+
+
+
+
 
     
         
