@@ -153,7 +153,24 @@ def image_get(name):
 
 
 
-    return jsonify(list(map(lambda x: x.serialize(), images_get_list))), 201
+@app.route("/pet/<user_name>", methods=["GET"])
+def pet_get(user_name):
+
+    user = User.query.filter_by(user_name=user_name).one_or_none()
+    pet = Pet.query.filter(Pet.user_id==user.id)
+    pet_list = pet.all()
+
+    pet_get_id = list(map(lambda x: x.id, pet_list))
+
+    pet_get_list = list(map(lambda n: Pet.query.get(n), pet_get_id))
+
+    return jsonify(list(map(lambda x: x.serialize(), pet_get_list))), 201
+
+
+
+    
+
+   
 
     
 
