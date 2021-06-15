@@ -166,6 +166,22 @@ def pet_get(user_name):
 
     return jsonify(list(map(lambda x: x.serialize(), pet_get_list))), 201
 
+@app.route("/user/<int:id_user>", methods=["GET"])
+def user_by_id(id_user):
+
+    user = User.query.get(id_user)
+
+    if request.method == "GET":
+
+        return jsonify(user.serialize())
+
+    
+        
+    
+
+
+
+
 
 
     

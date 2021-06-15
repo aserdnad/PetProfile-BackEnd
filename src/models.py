@@ -42,6 +42,13 @@ class User(db.Model):
             return False
         return user
 
+    def save(self):
+        
+        db.session.add(self)
+        db.session.commit()
+
+   
+
     def set_password(self, password):
         print(generate_password_hash(
             f"{password}{self.sal}"
@@ -110,6 +117,11 @@ class Pet(db.Model):
             db.session.rollback()
             return False
         return pet
+
+    def save(self):
+        """Save and commit a new contact"""
+        db.session.add(self)
+        db.session.commit()
 
     def __repr__(self):
         return '<Pet %r>' % self.name
