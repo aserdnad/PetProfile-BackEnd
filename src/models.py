@@ -122,6 +122,9 @@ class Pet(db.Model):
             return False
         return pet
 
+    
+    
+
     def save(self):
         
         db.session.add(self)
@@ -130,6 +133,9 @@ class Pet(db.Model):
         except Exception as error:
             db.session.rollback()
             return False
+
+    
+    
 
     def __repr__(self):
         return '<Pet %r>' % self.name
@@ -174,6 +180,15 @@ class History(db.Model):
             db.session.rollback()
             return False
         return history
+
+    def save(self):
+        
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return False
     
     def __repr__(self):
         return '<History %r>' % self.history
@@ -212,6 +227,15 @@ class Photo_add(db.Model):
             db.session.rollback()
             return False
         return photo_add
+
+    def save(self):
+        
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return False
 
     def __repr__(self):
         return '<Photo_add %r>' % self.images

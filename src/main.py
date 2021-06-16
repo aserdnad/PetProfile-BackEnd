@@ -193,7 +193,7 @@ def user_by_id(id_user):
 
         return jsonify(user.serialize())
 
-@app.route("/pet/<int:id_pet>", methods=["GET", "PUT"])
+@app.route("/pet/<int:id_pet>", methods=["GET", "PUT", "DELETE"])
 def pet_by_id(id_pet):
 
     pet = Pet.query.get(id_pet)
@@ -217,6 +217,40 @@ def pet_by_id(id_pet):
         pet.save()
 
         return jsonify(pet.serialize())
+
+    elif request.method == "DELETE":
+        db.session.delete(pet)
+        db.session.commit()
+        
+        return jsonify({"msg": f"pet {id_pet} deleted"}), 200
+
+@app.route("/photo/<int:id_image>", methods=["GET", "PUT", "DELETE"])
+def image_by_id(id_image):
+
+    image = Photo_add.query.get(id_image)
+    data = request.json
+    if request.method == "GET":
+
+        return jsonify(image.serialize())
+
+    elif request.method == "PUT":
+        try: 
+            if 'images' in data:
+                image.images = data['images']
+            
+           
+        except:
+            raise APIException('Some data failed', status_code=400)
+
+        image.save()
+
+        return jsonify(image.serialize())
+
+    elif request.method == "DELETE":
+        db.session.delete(image)
+        db.session.commit()
+        
+        return jsonify({"msg": f"pet {id_image} deleted"}), 200
 
 
 
