@@ -250,7 +250,37 @@ def image_by_id(id_image):
         db.session.delete(image)
         db.session.commit()
         
-        return jsonify({"msg": f"pet {id_image} deleted"}), 200
+        return jsonify({"msg": f"image {id_image} deleted"}), 200
+
+@app.route("/history/<int:id_history>", methods=["GET", "PUT", "DELETE"])
+def history_by_id(id_history):
+
+    history_get = History.query.get(id_history)
+    data = request.json
+    if request.method == "GET":
+
+        return jsonify(history_get.serialize())
+
+    elif request.method == "PUT":
+        try: 
+            if 'history' in data:
+                history_get.history = data['history']
+            if 'vacune' in data:
+                history_get.vacune = data['vacune']
+            
+           
+        except:
+            raise APIException('Some data failed', status_code=400)
+
+        history_get.save()
+
+        return jsonify(history_get.serialize())
+
+    elif request.method == "DELETE":
+        db.session.delete(history_get)
+        db.session.commit()
+        
+        return jsonify({"msg": f"history {id_history} deleted"}), 200
 
 
 
@@ -259,20 +289,7 @@ def image_by_id(id_image):
 
     
         
-    
-
-
-
-
-
-
-    
-
-   
-
-    
-
-    
+       
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
