@@ -1,4 +1,6 @@
-
+"""
+This module takes care of starting the API Server, Loading the DB and Adding the endpoints
+"""
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
@@ -10,7 +12,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, History, Photo_add, Pet
-from flask_jwt_extended import create_access_token, JWTManager
+from flask_jwt_extended import create_access_token, JWTManager, jwt_required
 #from models import Person
 
 app = Flask(__name__)
@@ -165,6 +167,7 @@ def pet_get(user_name):
     return jsonify(list(map(lambda x: x.serialize(), pet_get_list))), 201
 
 @app.route("/user/<int:id_user>", methods=["GET", "PUT"])
+@jwt_required()
 def user_by_id(id_user):
 
     user = User.query.get(id_user)
