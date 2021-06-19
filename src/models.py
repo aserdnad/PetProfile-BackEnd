@@ -248,3 +248,53 @@ class Photo_add(db.Model):
         "pet_id": self.pet_id
         }
 
+class Calendar(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    start = db.Column(db.String(11),unique=False,nullable=False)
+    end = db.Column(db.String(11),unique=True,nullable=False)
+    title = db.Column(db.String(50),unique=True,nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+    pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
+    pet = db.relationship('Pet',lazy=True)
+    user = db.relationship('User',lazy=True)
+
+    def __init__(self,**kwargs):
+        self.start = kwargs.get('start')
+        self.end = kwargs.get('end')
+        self.title = kwargs.get('title')
+        self.user_id = kwargs.get('user_id')
+        self.pet_id = kwargs.get('pet_id')
+
+    @classmethod
+    def create(cls, **kwargs):
+        calendar = cls(**kwargs)
+        db.session.add(calendar)
+        try: 
+            db.session.commit()
+        except Exception as error:
+            print(error.args)
+            db.session.rollback()
+            return False
+        return calendar
+
+    def save(self):
+        
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return False
+
+    def __repr__(self):
+        return '<Calendar %r>' % self.title
+
+    def serialize(self):
+        return {
+        "id": self.id,
+        "start": self.start,
+        "end": self.end,
+        "title": self.title,
+        "user_id": self.user_id,
+        "pet_id": self.pet_id
+        }
