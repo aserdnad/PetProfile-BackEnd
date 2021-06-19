@@ -309,6 +309,38 @@ def history_by_id(id_history):
         
         return jsonify({"msg": f"history {id_history} deleted"}), 200
 
+@app.route("/calendar/<int:id_calendar>", methods=["GET", "PUT", "DELETE"])
+def calendar_by_id(id_calendar):
+
+    calendar_get = Calendar.query.get(id_calendar)
+    data = request.json
+    if request.method == "GET":
+
+        return jsonify(calendar_get.serialize())
+
+    elif request.method == "PUT":
+        try: 
+            if 'start' in data:
+                calendar_get.start = data['start']
+            if 'end' in data:
+                calendar_get.end = data['end']
+            if 'title' in data:
+                calendar_get.title = data['title']
+            
+           
+        except:
+            raise APIException('Some data failed', status_code=400)
+
+        calendar_get.save()
+
+        return jsonify(calendar_get.serialize())
+
+    elif request.method == "DELETE":
+        db.session.delete(calendar_get)
+        db.session.commit()
+        
+        return jsonify({"msg": f"calendar {id_calendar} deleted"}), 200
+
 
 
 
