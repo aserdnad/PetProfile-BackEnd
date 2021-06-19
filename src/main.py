@@ -264,6 +264,8 @@ def image_by_id(id_image):
         try: 
             if 'images' in data:
                 image.images = data['images']
+            if 'token_image' in data:
+                image.token_image = data['token_image']
             
            
         except:
@@ -294,6 +296,10 @@ def history_by_id(id_history):
                 history_get.history = data['history']
             if 'vacune' in data:
                 history_get.vacune = data['vacune']
+            if 'history_key' in data:
+                history_get.history_key = data['history_key']
+            if 'token_vacune' in data:
+                history_get.token_vacune = data['token_vacune']
             
            
         except:
