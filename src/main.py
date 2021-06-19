@@ -11,7 +11,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, History, Photo_add, Pet
+from models import db, User, History, Photo_add, Pet, Calendar
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required
 #from models import Person
 
@@ -104,6 +104,20 @@ def photo_add_user():
     if not isinstance(photo_add, Photo_add):
         return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
     return jsonify(photo_add.serialize()), 201
+
+@app.route("/calendar", methods=["POST"])
+def calendar_user():
+    data = request.json
+    user = User.query.filter_by(email=data['email']).one_or_none()
+    pet = Pet.query.filter_by(name=data['name']).one_or_none()
+    calendar = Calendar.create(start=data.get('start'),end=data.get('end'),title=data.get('title'), user_id=user.id, pet_id=pet.id)
+    if user is None:
+        return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+    if not isinstance(user, User):
+        return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
+    if not isinstance(calendar, Calendar):
+        return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
+    return jsonify(calendar.serialize()), 201
 
 @app.route("/pet", methods=["POST"])
 def pet():
