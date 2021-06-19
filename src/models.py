@@ -156,10 +156,10 @@ class Pet(db.Model):
 
 class History(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    history = db.Column(db.String(40),unique=False,nullable=False)
-    history_key = db.Column(db.String(40),unique=True,nullable=False)
-    vacune = db.Column(db.String(40),unique=False,nullable=False)
-    token_vacune = db.Column(db.String(100),unique=True,nullable=False)
+    history = db.Column(db.String(150),unique=False,nullable=False)
+    history_key = db.Column(db.String(150),unique=True,nullable=False)
+    vacune = db.Column(db.String(150),unique=False,nullable=False)
+    token_vacune = db.Column(db.String(150),unique=True,nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
     user = db.relationship('User',lazy=True)
@@ -211,7 +211,8 @@ class History(db.Model):
 
 class Photo_add(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    images = db.Column(db.String(40),unique=False,nullable=False)
+    images = db.Column(db.String(150),unique=False,nullable=False)
+    token_image = db.Column(db.String(150),unique=True,nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
     pet = db.relationship('Pet',lazy=True)
@@ -219,6 +220,7 @@ class Photo_add(db.Model):
 
     def __init__(self,**kwargs):
         self.images = kwargs.get('images')
+        self.token_image = kwargs.get('token_image')
         self.user_id = kwargs.get('user_id')
         self.pet_id = kwargs.get('pet_id')
 
@@ -250,6 +252,7 @@ class Photo_add(db.Model):
         return {
         "id": self.id,
         "images": self.images,
+        "token_image": self.token_image,
         "user_id": self.user_id,
         "pet_id": self.pet_id
         }

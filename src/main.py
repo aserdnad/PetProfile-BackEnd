@@ -96,7 +96,7 @@ def photo_add_user():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
     pet = Pet.query.filter_by(name=data['name']).one_or_none()
-    photo_add = Photo_add.create(images=data.get('images'), user_id=user.id, pet_id=pet.id)
+    photo_add = Photo_add.create(images=data.get('images'),token_image=data.get('token_image'), user_id=user.id, pet_id=pet.id)
     if user is None:
         return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
     if not isinstance(user, User):
