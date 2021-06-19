@@ -165,6 +165,18 @@ def image_get(name):
 
     return jsonify(list(map(lambda x: x.serialize(), images_get_list))), 201
 
+@app.route("/calendar/pet/<name>", methods=["GET"])
+def calendar_get(name):
+
+    pet = Pet.query.filter_by(name=name).one_or_none()
+    calendar = Calendar.query.filter(Calendar.pet_id==pet.id)
+    calendar_list = calendar.all()
+
+    calendar_get_id = list(map(lambda x: x.id, calendar_list))
+
+    calendar_get_list = list(map(lambda n: Calendar.query.get(n), calendar_get_id))
+
+    return jsonify(list(map(lambda x: x.serialize(), calendar_get_list))), 201
 
 
 @app.route("/pet/<user_name>", methods=["GET"])
