@@ -89,11 +89,11 @@ class Pet(db.Model):
     name = db.Column(db.String(40),unique=False,nullable=False)
     race = db.Column(db.String(40),unique=False,nullable=False)
     gender = db.Column(db.String(40),unique=False,nullable=False)
-    age = db.Column(db.Integer(),unique=False,nullable=False)
+    age = db.Column(db.String(10),unique=False,nullable=False)
     species = db.Column(db.String(40),unique=False,nullable=False)
-    weight = db.Column(db.Integer(),unique=False,nullable=False)
-    height = db.Column(db.Integer(),unique=False,nullable=False)
-    birthday = db.Column(db.Integer(),unique=False,nullable=False)
+    weight = db.Column(db.String(10),unique=False,nullable=False)
+    height = db.Column(db.String(10),unique=False,nullable=False)
+    birthday = db.Column(db.String(11),unique=False,nullable=False)
     
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
 
@@ -157,7 +157,9 @@ class Pet(db.Model):
 class History(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     history = db.Column(db.String(40),unique=False,nullable=False)
+    history_key = db.Column(db.String(40),unique=True,nullable=False)
     vacune = db.Column(db.String(40),unique=False,nullable=False)
+    token_vacune = db.Column(db.String(100),unique=True,nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
     user = db.relationship('User',lazy=True)
@@ -165,7 +167,9 @@ class History(db.Model):
 
     def __init__(self,**kwargs):
         self.history = kwargs.get('history')
+        self.history_key = kwargs.get('history_key')
         self.vacune = kwargs.get('vacune')
+        self.token_vacune = kwargs.get('token_vacune')
         self.user_id = kwargs.get('user_id')
         self.pet_id = kwargs.get('pet_id')
 
@@ -197,7 +201,9 @@ class History(db.Model):
         return {
         "id": self.id,
         "history": self.history,
+        "history_key": self.history_key,
         "vacune": self.vacune,
+        "token_vacune": self.token_vacune,
         "user_id": self.user_id,
         "pet_id": self.pet_id
         }

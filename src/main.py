@@ -82,7 +82,7 @@ def history():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
     pet = Pet.query.filter_by(name=data['name']).one_or_none()
-    history = History.create(history=data.get('history'), vacune=data.get('vacune'), user_id=user.id, pet_id=pet.id)
+    history = History.create(history=data.get('history'), history_key=data.get("history_key"), vacune=data.get('vacune'), token_vacune=data.get('token_vacune'), user_id=user.id, pet_id=pet.id)
     if user is None:
         return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
     if not isinstance(user, User):
