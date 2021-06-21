@@ -123,8 +123,8 @@ def calendar_user():
 def pet():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
-    print(data.get('birthday'))
-    pet = Pet.create(name = data.get('name'),
+    pet = Pet.create(
+        name = data.get('name'),
         race = data.get('race'),
         gender = data.get('gender'),
         age = data.get('age'),
@@ -132,7 +132,8 @@ def pet():
         weight = data.get('weight'),
         height = data.get('height'),
         birthday = data.get('birthday'),
-        user_id = user.id)
+        user_id = user.id
+    )
     if user is None:
         return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
     if not isinstance(user, User):

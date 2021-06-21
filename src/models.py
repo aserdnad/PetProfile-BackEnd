@@ -93,7 +93,7 @@ class Pet(db.Model):
     species = db.Column(db.String(40),unique=False,nullable=False)
     weight = db.Column(db.String(10),unique=False,nullable=False)
     height = db.Column(db.String(10),unique=False,nullable=False)
-    birthday = db.Column(db.String(40),unique=False,nullable=False)
+    birthday = db.Column(db.String(11),unique=False,nullable=False)
     
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
 
@@ -123,8 +123,6 @@ class Pet(db.Model):
         return pet
 
     
-    
-
     def save(self):
         
         db.session.add(self)
