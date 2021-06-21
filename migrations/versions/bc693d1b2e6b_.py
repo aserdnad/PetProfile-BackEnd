@@ -25,7 +25,7 @@ def upgrade():
     sa.Column('name', sa.String(length=40), nullable=False),
     sa.Column('last_name', sa.String(length=40), nullable=False),
     sa.Column('phone', sa.String(length=12), nullable=False),
-    sa.Column('birthday', sa.String(length=11), nullable=False),
+    sa.Column('birthday', sa.String(length=40), nullable=False),
     sa.Column('country', sa.String(length=40), nullable=False),
     sa.Column('city', sa.String(length=40), nullable=False),
     sa.Column('sal', sa.String(length=40), nullable=False),

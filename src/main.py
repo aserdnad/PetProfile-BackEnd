@@ -123,6 +123,7 @@ def calendar_user():
 def pet():
     data = request.json
     user = User.query.filter_by(email=data['email']).one_or_none()
+    print(data.get('birthday'))
     pet = Pet.create(name = data.get('name'),
         race = data.get('race'),
         gender = data.get('gender'),
