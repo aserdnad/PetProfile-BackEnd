@@ -192,7 +192,7 @@ def pet_get(user_name):
 
     pet_get_list = list(map(lambda n: Pet.query.get(n), pet_get_id))
 
-    return jsonify(list(map(lambda x: x.serialize(), pet_get_list))), 201
+    return jsonify(list(map(lambda x: x.serialize(), pet_list))), 201
 
 @app.route("/user/<int:id_user>", methods=["GET", "PUT"])
 @jwt_required()

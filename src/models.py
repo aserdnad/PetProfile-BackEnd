@@ -257,8 +257,8 @@ class Photo_add(db.Model):
 
 class Calendar(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    start = db.Column(db.String(11),unique=False,nullable=False)
-    end = db.Column(db.String(11),unique=True,nullable=False)
+    start = db.Column(db.String(50),unique=False,nullable=False)
+    end = db.Column(db.String(50),unique=True,nullable=False)
     title = db.Column(db.String(50),unique=True,nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))

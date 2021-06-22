@@ -51,8 +51,8 @@ def upgrade():
     )
     op.create_table('calendar',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('start', sa.String(length=11), nullable=False),
-    sa.Column('end', sa.String(length=11), nullable=False),
+    sa.Column('start', sa.String(length=50), nullable=False),
+    sa.Column('end', sa.String(length=50), nullable=False),
     sa.Column('title', sa.String(length=50), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('pet_id', sa.Integer(), nullable=True),
