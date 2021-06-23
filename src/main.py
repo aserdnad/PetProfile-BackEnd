@@ -24,11 +24,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.from_mapping(
     CLOUDINARY_URL=os.environ.get("CLOUDINARY_URL")
 )
-cloudinary.config( 
-  cloud_name = "petprofile", 
-  api_key = "519216389817554", 
-  api_secret = "HT9brnidX5ZuTi9xk0TdgqV6fJk" 
-)
+#cloudinary.config( 
+#  cloud_name = "petprofile", 
+# api_key = "519216389817554", 
+#  api_secret = "HT9brnidX5ZuTi9xk0TdgqV6fJk" )
 
 MIGRATE = Migrate(app, db)
 db.init_app(app)
