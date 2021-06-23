@@ -5,7 +5,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, make_response
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
@@ -13,12 +13,17 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, History, Photo_add, Pet, Calendar, Vacune
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required
+import cloudinary.uploader as uploader
+
 #from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_mapping(
+    CLOUDINARY_URL=os.environ.get("CLOUDINARY_URL")
+)
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
@@ -77,33 +82,137 @@ def log_in():
         "token": token
     }), 200
 
-@app.route("/history", methods=["POST"])
-def history():
-    data = request.json
-    user = User.query.filter_by(email=data['email']).one_or_none()
-    pet = Pet.query.filter_by(name=data['name']).one_or_none()
-    history = History.create(history=data.get('history'), history_key=data.get("history_key"), vacune=data.get('vacune'), token_vacune=data.get('token_vacune'), user_id=user.id, pet_id=pet.id)
-    if user is None:
-        return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
-    if not isinstance(user, User):
-        return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
-    if not isinstance(history, History):
-        return jsonify({"msg": "ERROR of Matrix X_X History"}), 500
-    return jsonify(history.serialize()), 201
+@app.route("/history/<user_name>/<pet_name>", methods=["POST"])
+def new_history(user_name, pet_name):
+
+    try:
+        image_file = request.files["file"]
+
+        response = uploader.upload(image_file)  
+
+        user = User.query.filter_by(user_name=user_name).one_or_none()
+
+        pet = Pet.query.filter_by(name=pet_name).one_or_none()
+        
+        try:
+            history = History.create(
+                title=request.form.get("title"),
+                public_id=response["public_id"], 
+                image_url=response["secure_url"], 
+                user_id=user.id, 
+                pet_id=pet.id
+                )
+            if user is None:
+                return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+            if not isinstance(user, User):
+                return jsonify({"msg": "ERROR of Matrix X_X User"}), 400
+            if not isinstance(history, History):
+                return jsonify({"msg": "ERROR of Matrix X_X History"}), 500
+
+            return jsonify(history.serialize()), 201
+            
+        except:
+            db.session.rollback()
+            status_code = 400
+            response_body = {
+                "result": "HTTP_400_BAD_REQUEST. no title in key/value"
+            }
+    except Exception as error:
+        status_code = 400
+        return jsonify({
+                "result": f"HTTP_400_BAD_REQUEST. {type(error)}{error.args}"
+            })
     
-@app.route("/photo_add", methods=["POST"])
-def photo_add_user():
-    data = request.json
-    user = User.query.filter_by(email=data['email']).one_or_none()
-    pet = Pet.query.filter_by(name=data['name']).one_or_none()
-    photo_add = Photo_add.create(images=data.get('images'),token_image=data.get('token_image'), user_id=user.id, pet_id=pet.id)
-    if user is None:
-        return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
-    if not isinstance(user, User):
-        return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
-    if not isinstance(photo_add, Photo_add):
-        return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
-    return jsonify(photo_add.serialize()), 201
+
+
+@app.route("/photo_add/<user_name>/<pet_name>", methods=["POST"])
+def new_photo_add(user_name, pet_name):
+
+    try:
+        image_file = request.files["file"]
+
+        response = uploader.upload(image_file)  
+
+        user = User.query.filter_by(user_name=user_name).one_or_none()
+
+        pet = Pet.query.filter_by(name=pet_name).one_or_none()
+        
+        try:
+            photo_add = Photo_add.create(
+                title=request.form.get("title"),
+                public_id=response["public_id"], 
+                image_url=response["secure_url"], 
+                user_id=user.id, 
+                pet_id=pet.id
+                )
+            if user is None:
+                return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+            if not isinstance(user, User):
+                return jsonify({"msg": "ERROR of Matrix X_X User"}), 400
+            if not isinstance(photo_add, Photo_add):
+                return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
+
+            return jsonify(photo_add.serialize()), 201
+
+
+        except:
+            db.session.rollback()
+            status_code = 400
+            response_body = {
+                "result": "HTTP_400_BAD_REQUEST. no title in key/value"
+            }
+    except Exception as error:
+        status_code = 400
+        response_body = {
+                "result": f"HTTP_400_BAD_REQUEST. {type(error)}{error.args}"
+            }
+    
+
+@app.route("/vacune/<user_name>/<pet_name>", methods=["POST"])
+def new_vacune(user_name, pet_name):
+
+    try:
+        image_file = request.files["file"]
+
+        response = uploader.upload(image_file)  
+
+        user = User.query.filter_by(user_name=user_name).one_or_none()
+
+        pet = Pet.query.filter_by(name=pet_name).one_or_none()
+        
+        try:
+            vacune = Vacune.create(
+                title=request.form.get("title"),
+                public_id=response["public_id"], 
+                image_url=response["secure_url"], 
+                user_id=user.id, 
+                pet_id=pet.id
+                )
+            if user is None:
+                return jsonify({"msg": "No se encontro el usuario, vuelva intentar :D"}), 500
+            if not isinstance(user, User):
+                return jsonify({"msg": "ERROR of Matrix X_X User"}), 400
+            if not isinstance(photo_add, Photo_add):
+                return jsonify({"msg": "ERROR of Matrix X_X Vacune"}), 500
+
+            return jsonify(vacune.serialize()), 201
+
+        except:
+            db.session.rollback()
+            status_code = 400
+            response_body = {
+                "result": "HTTP_400_BAD_REQUEST. no title in key/value"
+            }
+        
+
+    except Exception as error:
+        status_code = 400
+        response_body = {
+                "result": f"HTTP_400_BAD_REQUEST. {type(error)}{error.args}"
+            }
+    
+    
+
 
 @app.route("/calendar", methods=["POST"])
 def calendar_user():
@@ -116,7 +225,7 @@ def calendar_user():
     if not isinstance(user, User):
         return jsonify({"msg": "ERROR of Matrix X_X User"}), 500
     if not isinstance(calendar, Calendar):
-        return jsonify({"msg": "ERROR of Matrix X_X Photo_add"}), 500
+        return jsonify({"msg": "ERROR of Matrix X_X Calendar"}), 500
     return jsonify(calendar.serialize()), 201
 
 @app.route("/pet", methods=["POST"])
@@ -253,69 +362,114 @@ def pet_by_id(id_pet):
         
         return jsonify({"msg": f"pet {id_pet} deleted"}), 200
 
-@app.route("/photo/<int:id_image>", methods=["GET", "PUT", "DELETE"])
+
+
+@app.route("/photo/<int:id_image>", methods=["GET","DELETE"])
 def image_by_id(id_image):
 
-    image = Photo_add.query.get(id_image)
-    data = request.json
+    image_get = Photo_add.query.get(id_image)
+
     if request.method == "GET":
 
-        return jsonify(image.serialize())
+        return jsonify(image_get.serialize())
 
-    elif request.method == "PUT":
-        try: 
-            if 'images' in data:
-                image.images = data['images']
-            if 'token_image' in data:
-                image.token_image = data['token_image']
-            
-           
-        except:
-            raise APIException('Some data failed', status_code=400)
-
-        image.save()
-
-        return jsonify(image.serialize())
 
     elif request.method == "DELETE":
-        db.session.delete(image)
-        db.session.commit()
-        
-        return jsonify({"msg": f"image {id_image} deleted"}), 200
+        response = uploader.destroy(image_get.public_id)
 
-@app.route("/history/<int:id_history>", methods=["GET", "PUT", "DELETE"])
+        if "result" in response and response["result"] == "ok":
+            db.session.delete(image_get)
+
+            try:
+                db.session.commit()
+
+            except Exception as error:
+                db.session.rollback()
+                response_body = {
+                    "results": f"HTTP_500_INTERNAL_SERVER_ERROR. {type(error)} {error.args}"
+                }
+
+            return jsonify({"msg": f"history {id_image} deleted"}), 204
+
+        else:
+            response_body = {
+                "result": f"HTTP_404_NOT_FOUND.image not found..."
+            }
+            status_code = 404
+
+
+
+@app.route("/history/<int:id_history>", methods=["GET", "DELETE"])
 def history_by_id(id_history):
 
     history_get = History.query.get(id_history)
-    data = request.json
+    
     if request.method == "GET":
 
         return jsonify(history_get.serialize())
 
-    elif request.method == "PUT":
-        try: 
-            if 'history' in data:
-                history_get.history = data['history']
-            if 'vacune' in data:
-                history_get.vacune = data['vacune']
-            if 'history_key' in data:
-                history_get.history_key = data['history_key']
-            if 'token_vacune' in data:
-                history_get.token_vacune = data['token_vacune']
-            
-           
-        except:
-            raise APIException('Some data failed', status_code=400)
-
-        history_get.save()
-
-        return jsonify(history_get.serialize())
 
     elif request.method == "DELETE":
-        db.session.delete(history_get)
-        db.session.commit()
-        
-        return jsonify({"msg": f"history {id_history} deleted"}), 200
+        response = uploader.destroy(history_get.public_id)
+
+        if "result" in response and response["result"] == "ok":
+            db.session.delete(history_get)
+
+            try:
+                db.session.commit()
+
+            except Exception as error:
+                db.session.rollback()
+                response_body = {
+                    "results": f"HTTP_500_INTERNAL_SERVER_ERROR. {type(error)} {error.args}"
+                }
+
+            return jsonify({"msg": f"history {id_history} deleted"}), 204
+
+
+        else:
+            response_body = {
+                "result": f"HTTP_404_NOT_FOUND. image not found..."
+            }
+            status_code = 404
+            
+
+
+@app.route("/vacune/<int:id_vacune>", methods=["GET", "DELETE"])
+def vacune_by_id(id_vacune):
+
+    vacune_get = Vacune.query.get(id_vacune)
+    
+    if request.method == "GET":
+
+        return jsonify(vacune_get.serialize())
+
+
+    elif request.method == "DELETE":
+
+        response = uploader.destroy(vacune_get.public_id)
+
+        if "result" in response and response["result"] == "ok":
+
+            db.session.delete(vacune_get)
+
+            try:
+                db.session.commit()
+
+            except Exception as error:
+                db.session.rollback()
+                response_body = {
+                    "results": f"HTTP_500_INTERNAL_SERVER_ERROR. {type(error)} {error.args}"
+                }
+
+            return jsonify({"msg": f"history {id_vacune} deleted"}), 204
+
+
+        else:
+            response_body = {
+                "result": f"HTTP_404_NOT_FOUND. image not found..."
+            }
+            status_code = 404
 
 @app.route("/calendar/<int:id_calendar>", methods=["GET", "PUT", "DELETE"])
 def calendar_by_id(id_calendar):
