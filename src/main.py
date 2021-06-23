@@ -11,7 +11,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, History, Photo_add, Pet, Calendar
+from models import db, User, History, Photo_add, Pet, Calendar, Vacune
 from flask_jwt_extended import create_access_token, JWTManager, jwt_required
 #from models import Person
 

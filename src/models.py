@@ -154,20 +154,18 @@ class Pet(db.Model):
 
 class History(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    history = db.Column(db.String(150),unique=False,nullable=False)
-    history_key = db.Column(db.String(150),unique=True,nullable=False)
-    vacune = db.Column(db.String(150),unique=False,nullable=False)
-    token_vacune = db.Column(db.String(150),unique=True,nullable=False)
+    title = db.Column(db.String(150),unique=False,nullable=False)
+    public_id = db.Column(db.String(150),unique=True,nullable=False)
+    image_url = db.Column(db.String(150),unique=True,nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
     user = db.relationship('User',lazy=True)
     pet = db.relationship('Pet',lazy=True)
 
     def __init__(self,**kwargs):
-        self.history = kwargs.get('history')
-        self.history_key = kwargs.get('history_key')
-        self.vacune = kwargs.get('vacune')
-        self.token_vacune = kwargs.get('token_vacune')
+        self.title = kwargs.get('title')
+        self.public_id = kwargs.get('public_id')
+        self.image_url = kwargs.get('image_url')
         self.user_id = kwargs.get('user_id')
         self.pet_id = kwargs.get('pet_id')
 
@@ -193,15 +191,63 @@ class History(db.Model):
             return False
     
     def __repr__(self):
-        return '<History %r>' % self.history
+        return '<History %r>' % self.title
 
     def serialize(self):
         return {
         "id": self.id,
-        "history": self.history,
-        "history_key": self.history_key,
-        "vacune": self.vacune,
-        "token_vacune": self.token_vacune,
+        "title": self.title,
+        "image_url": self.image_url,
+        "user_id": self.user_id,
+        "pet_id": self.pet_id
+        }
+
+class Vacune(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    title = db.Column(db.String(150),unique=False,nullable=False)
+    public_id = db.Column(db.String(150),unique=True,nullable=False)
+    image_url = db.Column(db.String(150),unique=True,nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+    pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
+    user = db.relationship('User',lazy=True)
+    pet = db.relationship('Pet',lazy=True)
+
+    def __init__(self,**kwargs):
+        self.title = kwargs.get('title')
+        self.public_id = kwargs.get('public_id')
+        self.image_url = kwargs.get('image_url')
+        self.user_id = kwargs.get('user_id')
+        self.pet_id = kwargs.get('pet_id')
+
+    @classmethod
+    def create(cls, **kwargs):
+        vacune = cls(**kwargs)
+        db.session.add(vacune)
+        try: 
+            db.session.commit()
+        except Exception as error:
+            print(error.args)
+            db.session.rollback()
+            return False
+        return vacune
+
+    def save(self):
+        
+        db.session.add(self)
+        try:
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            return False
+    
+    def __repr__(self):
+        return '<Vacune %r>' % self.title
+
+    def serialize(self):
+        return {
+        "id": self.id,
+        "title": self.title,
+        "image_url": self.image_url,
         "user_id": self.user_id,
         "pet_id": self.pet_id
         }
@@ -209,16 +255,18 @@ class History(db.Model):
 
 class Photo_add(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    images = db.Column(db.String(150),unique=False,nullable=False)
-    token_image = db.Column(db.String(150),unique=True,nullable=False)
+    title = db.Column(db.String(150),unique=False,nullable=False)
+    public_id = db.Column(db.String(150),unique=True,nullable=False)
+    image_url = db.Column(db.String(150),unique=True,nullable=False)
     user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
     pet_id = db.Column(db.Integer(), db.ForeignKey(Pet.id))
-    pet = db.relationship('Pet',lazy=True)
     user = db.relationship('User',lazy=True)
+    pet = db.relationship('Pet',lazy=True)
 
     def __init__(self,**kwargs):
-        self.images = kwargs.get('images')
-        self.token_image = kwargs.get('token_image')
+        self.title = kwargs.get('title')
+        self.public_id = kwargs.get('public_id')
+        self.image_url = kwargs.get('image_url')
         self.user_id = kwargs.get('user_id')
         self.pet_id = kwargs.get('pet_id')
 
@@ -242,15 +290,15 @@ class Photo_add(db.Model):
         except Exception as error:
             db.session.rollback()
             return False
-
+    
     def __repr__(self):
-        return '<Photo_add %r>' % self.images
+        return '<Photo_add %r>' % self.title
 
     def serialize(self):
         return {
         "id": self.id,
-        "images": self.images,
-        "token_image": self.token_image,
+        "title": self.title,
+        "image_url": self.image_url,
         "user_id": self.user_id,
         "pet_id": self.pet_id
         }
