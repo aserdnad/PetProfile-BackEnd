@@ -165,14 +165,19 @@ def new_photo_add(user_name, pet_name):
         except:
             db.session.rollback()
             status_code = 400
-            response_body = {
+            return jsonify({
                 "result": "HTTP_400_BAD_REQUEST. no title in key/value"
-            }
+            })
+
     except Exception as error:
         status_code = 400
-        response_body = {
+        return jsonify({
                 "result": f"HTTP_400_BAD_REQUEST. {type(error)}{error.args}"
-            }
+            })
+
+    return jsonify({
+        "result": "se ha intentado"
+    })
     
 
 @app.route("/vacune/<user_name>/<pet_name>", methods=["POST"])
@@ -207,16 +212,20 @@ def new_vacune(user_name, pet_name):
         except:
             db.session.rollback()
             status_code = 400
-            response_body = {
+            return jsonify({
                 "result": "HTTP_400_BAD_REQUEST. no title in key/value"
-            }
+            })
         
 
     except Exception as error:
         status_code = 400
-        response_body = {
+        return jsonify({
                 "result": f"HTTP_400_BAD_REQUEST. {type(error)}{error.args}"
-            }
+            })
+
+    return jsonify({
+        "result": "se ha intentado"
+    })
     
     
 
@@ -282,6 +291,19 @@ def image_get(name):
     images_get_list = list(map(lambda n: Photo_add.query.get(n), images_get_id))
 
     return jsonify(list(map(lambda x: x.serialize(), images_get_list))), 201
+
+@app.route("/vacune/pet/<name>", methods=["GET"])
+def vacune_get(name):
+
+    pet = Pet.query.filter_by(name=name).one_or_none()
+    vacune = Vacune.query.filter(Vacune.pet_id==pet.id)
+    vacune_list = vacune.all()
+
+    vacune_get_id = list(map(lambda x: x.id, vacune_list))
+
+    vacune_get_list = list(map(lambda n: Vacune.query.get(n), vacune_get_id))
+
+    return jsonify(list(map(lambda x: x.serialize(), vacune_get_list))), 201
 
 @app.route("/calendar/pet/<name>", methods=["GET"])
 def calendar_get(name):
