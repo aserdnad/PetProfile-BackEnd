@@ -119,14 +119,16 @@ def new_history(user_name, pet_name):
         except:
             db.session.rollback()
             status_code = 400
-            response_body = {
-                "result": "HTTP_400_BAD_REQUEST. no title in key/value"
-            }
+            return  jsonify({
+                  "result": "HTTP_400_BAD_REQUEST. no title in key/value"
+            })
     except Exception as error:
         status_code = 400
         return jsonify({
                 "result": f"HTTP_400_BAD_REQUEST. {type(error)}{error.args}"
             })
+
+    return jsonify({"result": "se ha intentado"})
     
 
 
